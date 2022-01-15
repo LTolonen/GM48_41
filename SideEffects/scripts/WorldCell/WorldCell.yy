@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Components",
-    "path": "folders/Components.yy",
+    "name": "Scripts",
+    "path": "folders/Scripts.yy",
   },
   "resourceVersion": "1.0",
-  "name": "SpiteComponent",
+  "name": "WorldCell",
   "tags": [],
   "resourceType": "GMScript",
 }

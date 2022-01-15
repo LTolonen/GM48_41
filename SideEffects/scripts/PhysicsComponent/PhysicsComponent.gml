@@ -14,6 +14,8 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 	
 	terminal_velocity = 8;
 	
+	PhysicsComponentOnSolidCollision = -1;
+	
 	static ComponentOnUpdate = function()
 	{
 		world = global.WORLD;
@@ -43,6 +45,8 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 			xspeed -= sign(xspeed)*_friction;	
 		}
 		
+		var _collision_solid = -1;
+		
 		//Movement
 		if(xspeed > 0) //Moving right
 		{
@@ -52,7 +56,11 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 				var _min_left_x = entity.x+entity.width+xspeed;
 				for(var i=0; i<array_length(_solids); i++)
 				{
-					_min_left_x = min(_min_left_x,_solids[i].left_x);
+					if(_solids[i].left_x < _min_left_x)
+					{
+						_min_left_x = _solids[i].left_x;
+						_collision_solid = _solids[i];
+					}
 				}
 				entity.x = _min_left_x-entity.width;//max(entity.x,_min_left_x-entity.width);
 				xspeed = 0;
@@ -68,7 +76,11 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 				var _max_right_x = entity.x+xspeed;
 				for(var i=0; i<array_length(_solids); i++)
 				{
-					_max_right_x = max(_max_right_x,_solids[i].right_x);
+					if(_solids[i].right_x > _max_right_x)
+					{
+						_max_right_x = _solids[i].right_x;
+						_collision_solid = _solids[i];
+					}
 				}
 				entity.x = min(entity.x,_max_right_x);
 				xspeed = 0;
@@ -84,7 +96,11 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 				var _min_top_y = entity.y+entity.height+yspeed;
 				for(var i=0; i<array_length(_solids); i++)
 				{
-					_min_top_y = min(_min_top_y,_solids[i].top_y);
+					if(_solids[i].top_y < _min_top_y)
+					{
+						_min_top_y = _solids[i].top_y;
+						_collision_solid = _solids[i];
+					}
 				}
 				//entity.y = max(entity.y,_min_top_y-entity.height);
 				entity.y = _min_top_y-entity.height;
@@ -101,13 +117,25 @@ function PhysicsComponent(_gravity = 0, _ground_friction = 0, _air_friction = 0)
 				var _max_bottom_y = entity.y+yspeed;
 				for(var i=0; i<array_length(_solids); i++)
 				{
-					_max_bottom_y = max(_max_bottom_y,_solids[i].bottom_y);
+					if(_solids[i].bottom_y > _max_bottom_y)
+					{
+						_max_bottom_y = _solids[i].bottom_y;
+						_collision_solid = _solids[i];
+					}
 				}
 				entity.y = min(entity.y,_max_bottom_y);
 				yspeed = 0;
 			}
 			else
 				entity.y += yspeed;
+		}
+		
+		if(_collision_solid != -1)
+		{
+			if(PhysicsComponentOnSolidCollision != -1)
+			{
+				PhysicsComponentOnSolidCollision(_collision_solid);	
+			}
 		}
 	}
 }

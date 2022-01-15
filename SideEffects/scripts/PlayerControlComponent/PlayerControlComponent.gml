@@ -13,9 +13,19 @@ function PlayerControlComponent() : Component("PLAYER_CONTROL") constructor
 	jetpack_acceleration = 0.25;
 	jetpack_max_speed = 3;
 	
+	facing_left = false;
+	vertical_facing = 0;
+	
 	static ComponentOnPreUpdate = function()
 	{
 		var _right_left = keyboard_check(vk_right)-keyboard_check(vk_left);
+		
+		if(_right_left < 0)
+			facing_left = true;
+		if(_right_left > 0)
+			facing_left = false;
+		
+		vertical_facing = keyboard_check(vk_down)-keyboard_check(vk_up);
 		
 		entity.physics_component.gravity = normal_gravity;
 		entity.physics_component.xspeed = clamp(entity.physics_component.xspeed+acceleration*_right_left,-max_xspeed,max_xspeed);
@@ -57,6 +67,22 @@ function PlayerControlComponent() : Component("PLAYER_CONTROL") constructor
 			fuel--;
 			if(fuel < 0)
 				hovering = false;
+		}
+		
+		if(keyboard_check_pressed(ord("Z")))
+		{
+			var _bullet = instance_create_depth(entity.x,entity.y,entity.depth+1,ObjBullet);
+			if(vertical_facing == 0)
+			{
+				if(facing_left)
+					_bullet.physics_component.xspeed = -8;
+				else
+					_bullet.physics_component.xspeed = 8;
+			}
+			else
+			{
+				_bullet.physics_component.yspeed = 8 * vertical_facing;
+			}
 		}
 		
 	}
