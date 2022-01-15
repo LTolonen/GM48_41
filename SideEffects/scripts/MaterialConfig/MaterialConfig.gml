@@ -1,0 +1,9 @@
+enum MATERIAL
+{
+	AIR,
+	STONE,
+	COUNT
+}
+
+global.MATERIAL_IS_SOLID = array_create(MATERIAL.COUNT,false);
+global.MATERIAL_IS_SOLID[MATERIAL.STONE] = true;
